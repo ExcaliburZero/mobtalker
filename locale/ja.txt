@@ -1,9 +1,0 @@
-Hey who are you? = 君は誰？
-My name is %s. = %sだよ。
-Your death! = うっせぇ死ね！
-Thanks! = ありがとう！
-See you! =またね！
-Yeah I don't like you either.　= 君なんか大嫌いだよ。
-F**k = 死ねゴミ！
-Hmm? = 何？
-Die! = 死ね！
