@@ -15,19 +15,18 @@ else
 	S = function(s) return s end
 end
 
---[[
 -- Save
 local function save()
-	local output = io.open(minetest.get_worldpath() .. "/mobtalker", "w")
-	for _,p in ipairs(minetest.get_connected_players()) do
-		output:write(creeper_love[p:get_player_name()]..p:get_player_name().."\n")
+	local output = io.open(minetest.get_worldpath() .. "/mobtalker_creeper", "w")
+	for i, v in pairs(creeper_love) do
+		output:write(v..i.."\n")
 	end
 	io.close(output)
 end
 
 -- Load
 local function load()
-	local input = io.open(minetest.get_worldpath().."/mobtalker", "r")
+	local input = io.open(minetest.get_worldpath().."/mobtalker_creeper", "r")
 	if input then
 		repeat
 			local love = input:read("*n")
@@ -35,15 +34,14 @@ local function load()
 				break
 			end
 			local name = input:read("*l")
-			creeper_love[name:sub(2)] = love
+			creeper_love[name] = love
 		until input:read(0) == nil
 		io.close(input)
-		load()
 	else
 		creeper_love = {}
 	end
 end
-]]--
+
 -- Return Formspec
 function mobtalker_creeper_talk(player,love,Q)
 	if love == 0 and Q == 1 then
@@ -100,11 +98,11 @@ end
 -- Event
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.creeper_choose1 then
-		minetest.after(0.2, function()
+		minetest.after(0.05, function()
 			minetest.show_formspec(player:get_player_name(),"creeper:talk",mobtalker_creeper_talk(player,creeper_love[player:get_player_name()],"bye"))
 		end)
 	elseif fields.creeper_choose2 then
-		minetest.after(0.2, function()
+		minetest.after(0.05, function()
 			minetest.show_formspec(player:get_player_name(),"creeper:talk",mobtalker_creeper_talk(player,creeper_love[player:get_player_name()],"fuck"))
 		end)
 	elseif fields.creeper_bye then
@@ -112,13 +110,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 		creeper_love[player:get_player_name()] = creeper_love[player:get_player_name()] + 1
 		creeper_talking[player:get_player_name()] = false
 		player:hud_remove(creeper_hud)
-		--save()
+		save()
 	elseif fields.creeper_boom then
 		creeper_talk = {}
 		creeper_love[player:get_player_name()] = creeper_love[player:get_player_name()] - 1
 		creeper_talking[player:get_player_name()] = false
 		player:hud_remove(creeper_hud)
-		minetest.after(0.2, function()
+		minetest.after(0.05, function()
 			creeper_boom(player:getpos())
 		end)
 	elseif fields["quit"] == "true" then
@@ -131,5 +129,6 @@ end)
 -- Auto Load
 minetest.register_on_joinplayer(function(player)
 	creeper_love[player:get_player_name()] = 0
-	--load()
+	load()
+	save()
 end)
