@@ -1,34 +1,67 @@
-local form_def = "size[16,15;true]".."bgcolor[#00000000;true]"
-
-local function return_form_image(mobname,face)
-	if face == nil then
-		face = "normal"
-	end
-	return "image[3,2;12.5,15.5;"..mobname.."_"..face..".png]"
+-- Intllib
+local S
+if minetest.get_modpath("intllib") then
+	S = intllib.Getter()
+else
+	S = function(s) return s end
 end
 
-local function return_form_text(mobname,text,pname)
+-- Return Formspec Function
+function xform(mobname,text,type,def)
+	-- Message
+	if not text then
+		text = S("Message is nil.")
+	end
+	
+	-- Proceed button
+	local button
+	if not type or type == "proceed" or type.type == "proceed" then
+		button = "button_exit[5.5,11;5,0.5;"..mobname.."_proceed;"..S("proceed").."]"
+	elseif type.choose3 then
+		button = "button_exit[5.5,9.6;5,0.5;"..mobname.."_choose1;"..type.choose1.."]"..
+			"button_exit[5.5,10.3;5,0.5;"..mobname.."_choose2;"..type.choose2.."]"..
+			"button_exit[5.5,11;5,0.5;"..mobname.."_choose3;"..type.choose3.."]"
+	elseif type.choose2 then
+		button = "button_exit[5.5,10.3;5,0.5;"..mobname.."_choose1;"..type.choose1.."]"..
+			"button_exit[5.5,11;5,0.5;"..mobname.."_choose2;"..type.choose2.."]"
+	else
+		button = "button_exit[5.5,11;5,0.5;"..mobname.."_"..string.lower(type)..";"..type.."]"
+	end
+	
+	-- Def Table
+	if not def then
+		def = {}
+	end
+	
+	-- Talker name
 	local name
-	if pname == nil then
+	if not def.name  then
 		if mobname == "creeper" then
-			name = "Cupa"
+			name = S("Cupa")
 		else
-			name = "Unknown"
+			name = S("Unknown")
 		end
 	else
-		name = pname
+		name = def.name
 	end
-	if text == nil then
-		face = "MESSAGE IS NIL"
+	
+	-- Image
+	local face
+	if not def.face then
+		face = "normal"
 	end
-	return "label[2,11;"..name.."]".."label[2,12;"..text.."]".."image[1.5,11.5;15,3;mobtalker_form.png]"
+	
+	-- Return Formspec
+	return "size[16,15;true]"..
+		"bgcolor[#00000000;true]"..
+		"image[3,2;12.5,15.5;"..mobname.."_"..face..".png]"..
+		"label[2,11;"..name.."]"..
+		"label[2,12;"..text.."]"..
+		"image[1.5,11.5;15,3;mobtalker_form.png]"..
+		button
 end
 
-function mobtalker_form(mobname,text,face,pname)
-	return form_def..return_form_image(mobname,face)..return_form_text(mobname,text,pname)
-end
-
--- Global
+-- Make Directory
 function mobtalker_mkdir()
 	local input = io.open(mobtalker.datadir,"r")
 	if input then
@@ -38,7 +71,8 @@ function mobtalker_mkdir()
 	end
 end
 
---[[ Save and Load
+--[[ Can't use!
+Save and Load
 function mobtalker_save(mobname,love)
 	local output = io.open(mobtalker.datadir.."/"..mobname..".txt", "w")
 	for _,v in pairs(love) do
@@ -62,4 +96,4 @@ function mobtalker_load(mobname,love)
 		love = {}
 	end
 end
-]]--
+]]
