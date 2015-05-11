@@ -14,34 +14,18 @@ else
 end
 
 -- Form func
-local function c_xform(type,text,def)
-	local button
-	if def == nil then
-		def = {}
-	end
-	if type == "proseed" or type.type == "proseed" or type == nil then
-		button = "button_exit[5.5,11;5,0.5;creeper_proseed;"..S("Proseed").."]"
-	elseif type.choose3 then
-		button = "button_exit[5.5,9.6;5,0.5;creeper_choose1;"..type.choose1.."]"..
-			"button_exit[5.5,10.3;5,0.5;creeper_choose2;"..type.choose2.."]"..
-			"button_exit[5.5,11;5,0.5;creeper_choose3;"..type.choose3.."]"
-	elseif type.choose2 then
-		button = "button_exit[5.5,10.3;5,0.5;creeper_choose1;"..type.choose1.."]"..
-			"button_exit[5.5,11;5,0.5;creeper_choose2;"..type.choose2.."]"
-	else
-		button = "button_exit[5.5,11;5,0.5;creeper_"..string.lower(type)..";"..type.."]"
-	end
-	return mobtalker_form(mobname,text,def.face,def.pname)..button
+local function form(text,type,def)
+	return xform(mobname,text,type,def)
 end
 
 -- Return Form
 local function creeper_form(player,love,route)
 	if love == 0 and route == 0 and count[player] == 0 then
-		return c_xform("proseed",S("Hey."))
+		return form(S("Hey."))
 	elseif love == 1 and route == 0 and count[player] == 0 then
-		return c_xform("proseed",S("Hey."))
+		return form(S("Hey."))
 	else
-		return c_xform("proseed",S("Exception handling error"))
+		return form(S("Exception handling error"))
 	end
 end
 
@@ -56,9 +40,8 @@ end
 -- Event
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	local entity = pself[player]
-	print(creeper_love[entity])
 	if formname == mobname..":form" then
-		if fields.creeper_proseed then
+		if fields.creeper_proceed then
 			creeper_talk[entity] = false
 			if creeper_love[entity] == 0 then
 				creeper_love[entity] = 1
