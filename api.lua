@@ -8,12 +8,12 @@ end
 
 -- Return Formspec Function
 function xform(mobname,text,type,def)
-	-- Message
+	-- If no message is passed, then set a default message
 	if not text then
 		text = S("Message is nil.")
 	end
-	
-	-- Proceed button
+
+	-- Set proceed button
 	local button
 	if not type or type == "proceed" or type.type == "proceed" then
 		button = "button_exit[5.5,11;5,0.5;"..mobname.."_proceed;"..S("proceed").."]"
@@ -27,41 +27,43 @@ function xform(mobname,text,type,def)
 	else
 		button = "button_exit[5.5,11;5,0.5;"..mobname.."_"..string.lower(type)..";"..type.."]"
 	end
-	
-	-- Def Table
+
+	-- Create def array if it does not exist
 	if not def then
 		def = {}
 	end
-	
-	-- Talker name
+
+	-- Set the name of the mob that is talking
 	local name
 	if not def.name  then
+		-- Creepers
 		if mobname == "creeper" then
 			name = S("Cupa")
+		-- If mob name is not listed above, then give it a default name
 		else
 			name = S("Unknown")
 		end
 	else
 		name = def.name
 	end
-	
-	-- Image
+
+	-- Set the mob's face for its image if a face isn't passed through def array
 	local face
 	if not def.face then
 		face = "normal"
 	end
-	
+
 	-- Return Formspec
 	return "size[16,15;true]"..
-		"bgcolor[#00000000;true]"..
-		"image[3,2;12.5,15.5;"..mobname.."_"..face..".png]"..
-		"label[2,11;"..name.."]"..
-		"label[2,12;"..text.."]"..
-		"image[1.5,11.5;15,3;mobtalker_form.png]"..
-		button
+		"bgcolor[#00000000;true]"..	-- Remove the default formspec background color
+		"image[3,2;12.5,15.5;"..mobname.."_"..face..".png]"..	-- Mob image
+		"label[2,11;"..name.."]"..	-- Mob name
+		"label[2,12;"..text.."]"..	-- The text the mob is saying
+		"image[1.5,11.5;15,3;mobtalker_form.png]"..	-- Text box
+		button	-- Proceed button
 end
 
--- Make Directory
+-- Read the directory for modtalker, or create it if it doesn't exist
 function mobtalker_mkdir()
 	local input = io.open(mobtalker.datadir,"r")
 	if input then
